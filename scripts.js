@@ -16,14 +16,22 @@ $(document).ready(function () {
   $("#addUserBtn").click(function() {
     addUser();
   });
+
+  if (typeof(Storage) !== "undefined") {
+    userList = JSON.parse(localStorage.getItem("userList") ?? "[]");
+    refreshUsersTable();
+  }
 });
 
 let userList = [];
-let lastUserId = 0;
 const emailRegEx = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
 const phoneRegEx = /^\s*(?:\+?(\d{1,3}))?([-. (]*(\d{3})[-. )]*)?((\d{3})[-. ]*(\d{2,4})(?:[-.x ]*(\d+))?)\s*$/;
 
 refreshUsersTable = function() {
+  if (typeof(Storage) !== "undefined") {
+    localStorage.setItem("userList", JSON.stringify(userList));
+  }
+  
   const filter = $.trim($("#searchField").val()).toLowerCase();
   const filteredList = !!filter.length ?
     userList.filter((user) => {
@@ -101,7 +109,7 @@ addUser = function() {
   
   if (isValid) {
     const user = {
-      id: ++lastUserId,
+      id: Math.max(...userList.map(function(o) { return o.id; })) + 1,
       firstName: $("#firstName").val(),
       lastName: $("#lastName").val(),
       email: $("#email").val(),
