@@ -31,7 +31,7 @@ refreshUsersTable = function() {
   if (typeof(Storage) !== "undefined") {
     localStorage.setItem("userList", JSON.stringify(userList));
   }
-  
+
   const filter = $.trim($("#searchField").val()).toLowerCase();
   const filteredList = !!filter.length ?
     userList.filter((user) => {
@@ -109,7 +109,7 @@ addUser = function() {
   
   if (isValid) {
     const user = {
-      id: Math.max(...userList.map(function(o) { return o.id; })) + 1,
+      id: userList.length ? Math.max(...userList.map(function(o) { return o.id; })) : 1,
       firstName: $("#firstName").val(),
       lastName: $("#lastName").val(),
       email: $("#email").val(),
