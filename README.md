@@ -8,6 +8,7 @@ Data is stored in local storage for testing purposes.
 - HTML, CSS
 - [jQuery](https://jquery.com/) version 3.6.0
 - [Bootstrap](https://getbootstrap.com/docs/3.4/) version 3.4.1
+- [Lodash](https://lodash.com/) version 4.17.10
 
 ## Development
 

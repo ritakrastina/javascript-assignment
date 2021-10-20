@@ -1,8 +1,9 @@
 $(document).ready(function () {
 
-  $("#searchField").on("keyup", function(e) {
+  const debounceSearchKeyup = _.debounce(function() {
     refreshUsersTable();
-  });
+  }, 300);
+  $("#searchField").on("keyup", debounceSearchKeyup);
 
   $("#openUserModalBtn").click(function() {
     $("#addUserModal").modal("show");
@@ -31,7 +32,7 @@ refreshUsersTable = function() {
   if (typeof(Storage) !== "undefined") {
     localStorage.setItem("userList", JSON.stringify(userList));
   }
-  
+
   const filter = $.trim($("#searchField").val()).toLowerCase();
   const filteredList = !!filter.length ?
     userList.filter((user) => {
@@ -43,19 +44,20 @@ refreshUsersTable = function() {
     : userList;
 
   $("#usersTable").find(".data-row").remove();
-  if (filteredList.length > 0) {
+
+  if (!_.isEmpty(filteredList)) {
     $("#emptyDataRow").hide();
 
     filteredList.forEach((user) => {
       var lastRow = $("<tr class='data-row'/>").appendTo($("#usersTable").find("tbody:last"));
       $.each(user, (property, value) => {
         if (property === "isActive") {
-          lastRow.append($("<td>" +
-                            "<label class='switch'>" +
-                              "<input class='activity-switch' type='checkbox' " + (value == 1 ? "checked" : "") + " user-id=" + user.id + ">" +
-                              "<span class='slider round'></span>" +
-                            "</label>" +
-                          "</td>"));
+          lastRow.append($(`<td>
+                              <label class="switch">
+                                <input class="activity-switch" type="checkbox" ${value == 1 ? "checked" : ""} user-id=${user.id}>
+                                <span class="slider round"></span>
+                              </label>
+                            </td>`));
 
           $(".activity-switch").unbind();
           $(".activity-switch").on("click", function (e) {
@@ -91,7 +93,7 @@ validateRegularExpressionField = function(fieldId, regEx, valueName) {
   const field = $(fieldId);
   if (!regEx.test(field.val())) {
     field.closest(".form-group").addClass("has-error");
-    field.after("<div class='error-block'>Value is not valid " + valueName + "</div>");
+    field.after(`<div class="error-block">Value is not valid ${valueName}</div>`);
     return false;
   }
   return true;
@@ -109,7 +111,7 @@ addUser = function() {
   
   if (isValid) {
     const user = {
-      id: userList.length ? (Math.max(...userList.map(function(o) { return o.id; })) + 1) : 1,
+      id: !_.isEmpty(userList) ? (Math.max(...userList.map(function(o) { return o.id; })) + 1) : 1,
       firstName: $("#firstName").val(),
       lastName: $("#lastName").val(),
       email: $("#email").val(),
@@ -117,7 +119,6 @@ addUser = function() {
       isActive: $("#isActive").val()
     };
     userList.push(user);
-
     refreshUsersTable();
     $("#addUserModal").modal("hide");
   }
@@ -127,8 +128,8 @@ showConfirmationDialog = function(userid) {
   const indx = userList.findIndex(item => item.id == userid);
   const user = userList[indx];
 
-  $("#confirmationModalText").html("Are you sure you want to change status of <b>" + user.firstName + " " + user.lastName + "</b> " +
-                                   "from <b>" + (user.isActive == 1 ? "Active" : "Inactive") + "</b> to <b>" + (user.isActive == 1 ? "Inactive" : "Active") + "</b>?");
+  $("#confirmationModalText").html(`Are you sure you want to change status of <b>${user.firstName} ${user.lastName}</b>
+                                   from <b>${user.isActive == 1 ? "Active" : "Inactive"}</b> to <b>${user.isActive == 1 ? "Inactive" : "Active"}</b>?`);
   
   $("#confirmationModalConfirmButton").unbind();
   $("#confirmationModalConfirmButton").on("click", function (e) {
