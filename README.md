@@ -1,8 +1,7 @@
 # User list management
 
-Simple page for user list management, based on javascript.
-Data is stored in local storage for testing purposes.
-[Live demo](https://ritakrastina.github.io/javascript-assignment/)
+Simple page for user list management, based on javascript. [Live demo](https://ritakrastina.github.io/javascript-assignment/)  
+Data is stored in local storage for testing purposes.  
 
 ## Built with
 
